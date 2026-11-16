@@ -1,4 +1,8 @@
-html, body { margin: 0; height: 100%; overflow: hidden; font-family: "Mochiy Pop One", system-ui, sans-serif; color: #fff; }
+html, body {
+  margin: 0; height: 100%; overflow: hidden; font-family: "Mochiy Pop One", system-ui, sans-serif; color: #fff;
+  /* phone friendliness: no double-tap zoom, no tap flash, no pull-to-refresh bounce */
+  touch-action: manipulation; -webkit-tap-highlight-color: transparent; overscroll-behavior: none;
+}
 body {
   /* calm anime night sky */
   background:
@@ -6,23 +10,25 @@ body {
     linear-gradient(to bottom, #050a24 0%, #0c1c52 40%, #1b3f86 70%, #3f7fb8 90%, #8cc4e0 100%);
 }
 canvas { display: block; }
-#fx { position: fixed; inset: 0; pointer-events: none; }
+#fx { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+#title, #hint { user-select: none; -webkit-user-select: none; }
 #title {
-  position: fixed; top: 18px; width: 100%; text-align: center; pointer-events: none;
-  font-size: clamp(20px, 4vw, 30px); letter-spacing: .04em;
+  position: fixed; top: calc(18px + env(safe-area-inset-top)); width: 100%; text-align: center; pointer-events: none;
+  font-size: clamp(18px, 4vw, 30px); letter-spacing: .04em;
   color: #fff; text-shadow: 0 0 12px #5ab8ff, 3px 3px 0 #0c1c52;
 }
 #hint {
-  position: fixed; top: 62px; width: 100%; text-align: center; pointer-events: none;
+  position: fixed; top: calc(62px + env(safe-area-inset-top)); width: 100%; text-align: center; pointer-events: none;
   font-size: 14px; padding: 0 16px; box-sizing: border-box;
   color: #e3f1ff; text-shadow: 0 0 8px rgba(90, 170, 255, .8);
 }
 #ui {
-  position: fixed; left: 50%; bottom: 30px; transform: translateX(-50%);
+  position: fixed; left: 50%; bottom: calc(30px + env(safe-area-inset-bottom)); transform: translateX(-50%);
   display: flex; gap: 10px; width: min(520px, calc(100% - 32px));
 }
 #q {
-  flex: 1; min-width: 0; padding: 12px 18px; border-radius: 999px; font: inherit; font-size: 15px;
+  /* 16px stops iPhone from zooming in when the box is tapped */
+  flex: 1; min-width: 0; padding: 12px 18px; border-radius: 999px; font: inherit; font-size: 16px;
   border: 3px solid #0c1c52; background: #f4f9ff; color: #0c1c52; outline: none;
   box-shadow: 4px 4px 0 #0c1c52;
 }
@@ -32,6 +38,23 @@ canvas { display: block; }
   padding: 12px 22px; border-radius: 999px; cursor: pointer; font: inherit; font-size: 16px; color: #fff;
   border: 3px solid #0c1c52; background: linear-gradient(135deg, #3fc6e8, #3a6dff);
   box-shadow: 4px 4px 0 #0c1c52; text-shadow: 2px 2px 0 #0c1c52; transition: transform .1s;
+  white-space: nowrap; flex-shrink: 0;
 }
 #ask:active { transform: translate(3px, 3px); box-shadow: 1px 1px 0 #0c1c52; }
 #ask:disabled { opacity: .6; cursor: default; }
+
+/* phones */
+@media (max-width: 480px) {
+  #title { top: calc(14px + env(safe-area-inset-top)); }
+  #hint { top: calc(50px + env(safe-area-inset-top)); font-size: 12px; }
+  #ui { bottom: calc(20px + env(safe-area-inset-bottom)); gap: 8px; }
+  #q { padding: 11px 14px; }
+  #ask { padding: 11px 16px; }
+}
+/* phones held sideways: tuck everything in so the ball has room */
+@media (max-height: 480px) and (orientation: landscape) {
+  #title { top: calc(8px + env(safe-area-inset-top)); font-size: 18px; }
+  #hint { top: calc(38px + env(safe-area-inset-top)); font-size: 12px; }
+  #ui { bottom: calc(10px + env(safe-area-inset-bottom)); }
+  #q, #ask { padding-top: 8px; padding-bottom: 8px; }
+}

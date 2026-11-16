@@ -12,12 +12,15 @@ A 3D, anime-style magic 8 ball floating under a calm starry night sky. Ask it a 
 - **Animated reveal** – the ball spins to its answer window and a glowing triangle floats up with a burst of sparkles
 - **20 classic answers** – colour-coded by mood (blue = yes, gold = maybe, coral = no), each with a kaomoji
 - Gently floats and tilts toward your mouse
+- **Works on phones** – the ball resizes to fit, and you can tap the ball or shake your phone to ask
 
 ## How to use
 
 1. Type a question in the box (optional).
 2. Click **Ask ✧**, press **Enter** or **Space**, or click the ball itself.
 3. Wait for the ball to shake and reveal your answer.
+
+On a phone you can also **shake your phone** to ask (iPhone will ask for motion permission the first time you tap).
 
 ## Run it locally
 

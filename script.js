@@ -5,6 +5,16 @@ const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(45, innerWidth / innerHeight, 0.1, 2000);
 camera.position.set(0, 0, 7);
 
+// Pull the camera back on narrow (phone portrait) screens so the whole ball fits
+let camZ = 7;
+function fitCamera() {
+  const tanHalf = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+  camZ = Math.max(7, 2.4 / (tanHalf * camera.aspect));
+  camera.position.z = camZ;
+}
+fitCamera();
+const isTouch = matchMedia('(pointer: coarse)').matches;
+
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.setSize(innerWidth, innerHeight);
@@ -353,8 +363,14 @@ function drawFx(k, el) {
     fctx.restore();
   };
   const s = Math.min(innerWidth, innerHeight) / 12;
-  sfx('シェイク', cx - inner * 1.25, cy - inner * 0.5, -0.25, s);
-  if (el > 0.35) sfx('シェイク!!', cx + inner * 1.2, cy + inner * 0.55, 0.2, s);
+  if (innerWidth < innerHeight) {
+    // portrait phone: put the sound effects above and below the ball
+    sfx('シェイク', cx - inner * 0.35, cy - inner * 1.45, -0.2, s);
+    if (el > 0.35) sfx('シェイク!!', cx + inner * 0.35, cy + inner * 1.55, 0.15, s);
+  } else {
+    sfx('シェイク', cx - inner * 1.25, cy - inner * 0.5, -0.25, s);
+    if (el > 0.35) sfx('シェイク!!', cx + inner * 1.2, cy + inner * 0.55, 0.2, s);
+  }
 }
 
 // sparkle burst on reveal
@@ -387,8 +403,32 @@ function ask() {
   const q = qInput.value.trim();
   hint.textContent = q ? `「${q}」` : 'The stars are thinking… ✧';
   askBtn.disabled = true;
+  qInput.blur();   // closes the phone keyboard so the ball is visible
   setState(reveal > 0 ? 'hiding' : 'shaking');
 }
+if (isTouch) hint.textContent = 'Ask a question, then tap the ball or shake your phone ✧';
+if (innerWidth < 420) qInput.placeholder = 'Ask the stars…';
+
+// Shake your phone to ask (iPhone asks for motion permission on the first tap)
+let motionAsked = false, lastShake = 0;
+function onMotion(e) {
+  const a = e.accelerationIncludingGravity || e.acceleration;
+  if (!a) return;
+  const force = Math.hypot(a.x || 0, a.y || 0, a.z || 0);
+  if (force > 25 && now() - lastShake > 1.5) { lastShake = now(); ask(); }
+}
+function enableMotion() {
+  if (motionAsked || typeof DeviceMotionEvent === 'undefined') return;
+  motionAsked = true;
+  if (typeof DeviceMotionEvent.requestPermission === 'function') {
+    DeviceMotionEvent.requestPermission()
+      .then(r => { if (r === 'granted') addEventListener('devicemotion', onMotion); })
+      .catch(() => {});
+  } else {
+    addEventListener('devicemotion', onMotion);
+  }
+}
+addEventListener('pointerdown', e => { if (e.pointerType === 'touch') enableMotion(); });
 askBtn.addEventListener('click', ask);
 qInput.addEventListener('keydown', e => { if (e.key === 'Enter') ask(); });
 addEventListener('keydown', e => {
@@ -403,6 +443,8 @@ renderer.domElement.addEventListener('pointermove', e => {
   raycaster.setFromCamera(mouse, camera);
   renderer.domElement.style.cursor = raycaster.intersectObject(body).length ? 'pointer' : 'default';
 });
+// on touch screens, let the ball drift back to centre after a tap
+addEventListener('pointerup', e => { if (e.pointerType === 'touch') mouse.set(0, 0); });
 renderer.domElement.addEventListener('click', e => {
   raycaster.setFromCamera(ndc(e), camera);
   if (raycaster.intersectObject(body).length) ask();
@@ -493,6 +535,7 @@ function animate() {
 
   camera.position.x = lerp(camera.position.x, mouse.x * 0.4, 0.03);
   camera.position.y = lerp(camera.position.y, mouse.y * 0.3, 0.03);
+  camera.position.z = camZ;
   camera.lookAt(0, 0, 0);
 
   nextShooter -= dt;
@@ -525,6 +568,7 @@ animate();
 addEventListener('resize', () => {
   camera.aspect = innerWidth / innerHeight;
   camera.updateProjectionMatrix();
+  fitCamera();
   renderer.setSize(innerWidth, innerHeight);
   sizeFx();
 });
