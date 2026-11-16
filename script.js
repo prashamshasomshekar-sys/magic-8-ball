@@ -353,8 +353,8 @@ function drawFx(k, el) {
     fctx.restore();
   };
   const s = Math.min(innerWidth, innerHeight) / 12;
-  sfx('シアク', cx - inner * 1.25, cy - inner * 0.5, -0.25, s);
-  if (el > 0.35) sfx('シアク!!', cx + inner * 1.2, cy + inner * 0.55, 0.2, s);
+  sfx('シェイク', cx - inner * 1.25, cy - inner * 0.5, -0.25, s);
+  if (el > 0.35) sfx('シェイク!!', cx + inner * 1.2, cy + inner * 0.55, 0.2, s);
 }
 
 // sparkle burst on reveal

@@ -8,7 +8,7 @@ A 3D, anime-style magic 8 ball floating under a calm starry night sky. Ask it a 
 
 - **3D cel-shaded 8 ball** – black, cartoon-style shading with a thick outline and an anime shine highlight
 - **Starry night sky** – twinkling stars, sparkles, a crescent moon, shooting stars and drifting fireflies
-- **Manga-style shake** – speed lines and a "シアク シアク!!" sound effect while the ball shakes
+- **Manga-style shake** – speed lines and a "シェイク シェイク!!" sound effect while the ball shakes
 - **Animated reveal** – the ball spins to its answer window and a glowing triangle floats up with a burst of sparkles
 - **20 classic answers** – colour-coded by mood (blue = yes, gold = maybe, coral = no), each with a kaomoji
 - Gently floats and tilts toward your mouse
